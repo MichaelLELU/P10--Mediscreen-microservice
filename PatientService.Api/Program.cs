@@ -1,3 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
+using PatientService.Api.Data;
+using PatientService.Api.Repositories;
+using PatientService.Api.Repositories.Interfaces;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,12 +13,20 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddDbContext<PatientDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("PatientDatabase")));
+
+
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
