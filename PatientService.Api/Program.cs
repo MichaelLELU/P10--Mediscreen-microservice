@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using PatientService.Api.Utils;
 using PatientService.Api.Data;
 using PatientService.Api.Repositories;
 using PatientService.Api.Repositories.Interfaces;
@@ -20,7 +21,12 @@ builder.Services.AddDbContext<PatientDbContext>(options =>
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -6,7 +6,8 @@ namespace PatientService.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PatientsController(IPatientRepository patientRepository) : ControllerBase
+public class PatientsController(
+    IPatientRepository patientRepository) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Patient>>> GetAll()
@@ -25,7 +26,12 @@ public class PatientsController(IPatientRepository patientRepository) : Controll
 
         if (patient is null)
         {
-            return NotFound();
+            return NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Patient introuvable",
+                Detail = $"Aucun patient ne possède l'identifiant {id}."
+            });
         }
 
         return Ok(patient);
@@ -48,15 +54,27 @@ public class PatientsController(IPatientRepository patientRepository) : Controll
     {
         if (id != patient.Id)
         {
-            return BadRequest(
-                "L'identifiant de l'URL doit correspondre à celui du patient.");
+            return BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Identifiants différents",
+                Detail =
+                    "L'identifiant de l'URL doit correspondre à celui du patient."
+            });
         }
 
-        bool updated = await patientRepository.UpdateAsync(patient);
+        bool updated =
+            await patientRepository.UpdateAsync(patient);
 
         if (!updated)
         {
-            return NotFound();
+            return NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Patient introuvable",
+                Detail =
+                    $"Le patient {id} ne peut pas être modifié car il n'existe pas."
+            });
         }
 
         return NoContent();
