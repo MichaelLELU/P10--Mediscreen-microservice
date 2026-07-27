@@ -2,5 +2,6 @@
   <Folder Name="/Éléments de solution/">
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="Mediscreen.Gateway/Mediscreen.Gateway.csproj" Id="288aed44-8339-4efa-9970-430d33e6016c" />
   <Project Path="PatientService.Api/PatientService.Api.csproj" />
 </Solution>

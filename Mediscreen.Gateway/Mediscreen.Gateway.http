@@ -1,0 +1,6 @@
+@Mediscreen.Gateway_HostAddress = http://localhost:5135
+
+GET {{Mediscreen.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
