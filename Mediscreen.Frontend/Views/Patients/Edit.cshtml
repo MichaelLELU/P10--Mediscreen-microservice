@@ -1,0 +1,78 @@
+﻿@model Mediscreen.Frontend.Models.PatientViewModel
+
+@{
+    ViewData["Title"] = "Modifier un patient";
+}
+
+<h1 class="mb-4">Modifier un patient</h1>
+
+<form asp-action="Edit"
+      asp-route-id="@Model.Id"
+      method="post">
+
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger mb-3">
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateOfBirth" class="form-label"></label>
+        <input asp-for="DateOfBirth"
+               type="date"
+               class="form-control" />
+        <span asp-validation-for="DateOfBirth"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Gender" class="form-label"></label>
+        <select asp-for="Gender" class="form-select">
+            <option value="">Sélectionner un genre</option>
+            <option value="F">Féminin</option>
+            <option value="M">Masculin</option>
+        </select>
+        <span asp-validation-for="Gender"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Enregistrer
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Annuler
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
