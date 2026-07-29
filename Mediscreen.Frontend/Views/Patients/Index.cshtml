@@ -65,7 +65,14 @@ else
                     <td>@patient.Gender</td>
                     <td>@(patient.Address ?? "Non renseignée")</td>
                     <td>@(patient.PhoneNumber ?? "Non renseigné")</td>
-                    <td>
+                    <td class="text-nowrap">
+                        <a asp-controller="Patients"
+                           asp-action="Details"
+                           asp-route-id="@patient.Id"
+                           class="btn btn-sm btn-outline-secondary">
+                            Détails
+                        </a>
+
                         <a asp-controller="Patients"
                            asp-action="Edit"
                            asp-route-id="@patient.Id"

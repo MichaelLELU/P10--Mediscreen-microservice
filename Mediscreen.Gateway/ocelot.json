@@ -10,7 +10,10 @@
           "Host": "localhost",
           "Port": 7189
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ]
+      }
     },
     {
       "UpstreamPathTemplate": "/gateway/patients/{id}",
@@ -22,7 +25,10 @@
           "Host": "localhost",
           "Port": 7189
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ]
+      }
     }
   ],
   "GlobalConfiguration": {

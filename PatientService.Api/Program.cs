@@ -1,34 +1,34 @@
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-using PatientService.Api.Utils;
+using PatientService.Api.Configurations;
 using PatientService.Api.Data;
 using PatientService.Api.Repositories;
 using PatientService.Api.Repositories.Interfaces;
+using PatientService.Api.Utils;
+using Scalar.AspNetCore;
 
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<PatientDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("PatientDatabase")));
+        builder.Configuration.GetConnectionString(
+            "PatientDatabase")));
 
-
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<
+    IPatientRepository,
+    PatientRepository>();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-var app = builder.Build();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+WebApplication app = builder.Build();
 
 app.UseExceptionHandler();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -37,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
