@@ -1,10 +1,8 @@
 ﻿using System.Text;
-using Mediscreen.Gateway.Services;
-using Mediscreen.Gateway.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Mediscreen.Gateway.Configurations;
+namespace Mediscreen.Gateway.Config;
 
 public static class AuthenticationConfiguration
 {
@@ -41,8 +39,9 @@ public static class AuthenticationConfiguration
                         ValidAudience = jwtAudience,
 
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwtKey)),
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(jwtKey)),
 
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero
@@ -50,8 +49,6 @@ public static class AuthenticationConfiguration
             });
 
         services.AddAuthorization();
-
-        services.AddSingleton<IAuthenticationService, DemoAuthenticationService>();
 
         return services;
     }

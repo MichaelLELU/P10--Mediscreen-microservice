@@ -52,7 +52,7 @@ public class AuthController(
                 await authenticationService.LoginAsync(
                     new LoginRequest
                     {
-                        Username = model.Username,
+                        Email = model.Username,
                         Password = model.Password
                     });
         }
@@ -97,7 +97,7 @@ public class AuthController(
             new AuthenticationProperties
             {
                 IsPersistent = false,
-                ExpiresUtc = new DateTimeOffset(response.Expiration)
+                ExpiresUtc = new DateTimeOffset(response.ExpiresAt)
             });
 
         if (!string.IsNullOrWhiteSpace(returnUrl)

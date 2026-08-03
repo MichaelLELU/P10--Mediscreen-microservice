@@ -1,4 +1,4 @@
-﻿namespace Mediscreen.Frontend.Models;
+﻿namespace AuthenticationService.Api.Models;
 
 public class LoginResponse
 {

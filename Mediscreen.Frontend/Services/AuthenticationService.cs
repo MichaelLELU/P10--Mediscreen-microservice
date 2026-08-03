@@ -17,7 +17,7 @@ public class AuthenticationService(
     {
         HttpResponseMessage response =
             await _httpClient.PostAsJsonAsync(
-                "/auth/login",
+                "/gateway/auth/login",
                 request);
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
