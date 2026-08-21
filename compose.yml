@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: mediscreen-mongodb
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+
+    environment:
+      MONGO_INITDB_DATABASE: MediscreenNoteDb
+
+    volumes:
+      - mediscreen-mongodb-data:/data/db
+
+volumes:
+  mediscreen-mongodb-data:

@@ -5,10 +5,12 @@
   </Folder>
   <Folder Name="/Éléments de solution/">
     <File Path=".gitignore" />
+    <File Path="compose.yml" />
   </Folder>
   <Project Path="AuthenticationService.Api/AuthenticationService.Api.csproj" Id="c2dff2a1-cdb8-4845-9ae2-5975312bda22" />
   <Project Path="Mediscreen.Frontend/Mediscreen.Frontend.csproj" Id="496e9859-7b13-41f8-986b-507f669ef700" />
   <Project Path="Mediscreen.Gateway/Mediscreen.Gateway.csproj" Id="288aed44-8339-4efa-9970-430d33e6016c" />
   <Project Path="Mediscreen.Tests/Mediscreen.Tests.csproj" Id="bff26e83-62d1-4c7c-a888-8b9b191dd7bd" />
+  <Project Path="NoteService.Api/NoteService.Api.csproj" Id="8de60f8b-9a91-4ae9-8ace-3c54476cc3fc" />
   <Project Path="PatientService.Api/PatientService.Api.csproj" />
 </Solution>
