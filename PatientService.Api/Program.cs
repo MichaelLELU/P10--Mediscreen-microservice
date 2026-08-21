@@ -43,3 +43,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+namespace PatientService.Api
+{
+    public sealed class PatientApiAssemblyMarker
+    {
+    }
+}

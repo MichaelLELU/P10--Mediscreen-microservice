@@ -22,3 +22,10 @@ await IdentityDataSeeder.SeedDemoUserAsync(
 app.MapControllers();
 
 app.Run();
+
+namespace AuthenticationService.Api
+{
+    public sealed class AuthenticationApiAssemblyMarker
+    {
+    }
+}
