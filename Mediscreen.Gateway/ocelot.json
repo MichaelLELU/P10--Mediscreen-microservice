@@ -41,6 +41,51 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKeys": [ "Bearer" ]
       }
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/notes",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/Notes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7151
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/notes/patient/{patientId}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/Notes/patient/{patientId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7151
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/notes/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ],
+      "DownstreamPathTemplate": "/api/Notes/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7151
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [ "Bearer" ]
+      }
     }
   ],
   "GlobalConfiguration": {
