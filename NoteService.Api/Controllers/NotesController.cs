@@ -30,7 +30,6 @@ public class NotesController(
         {
             PatientId = request.PatientId,
             Content = request.Content,
-            CreatedAt = DateTime.UtcNow
         };
 
         PatientNote createdNote =

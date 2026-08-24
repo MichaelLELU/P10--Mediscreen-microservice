@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using NoteService.Api.Data;
 using NoteService.Api.Models;
 using NoteService.Api.Repositories.Interfaces;
@@ -30,6 +31,9 @@ public class PatientNoteRepository(
     public async Task<PatientNote> AddAsync(
         PatientNote note)
     {
+        note.Id = ObjectId.GenerateNewId().ToString();
+        note.CreatedAt = DateTime.UtcNow;
+
         await context.Notes.AddAsync(note);
         await context.SaveChangesAsync();
 
