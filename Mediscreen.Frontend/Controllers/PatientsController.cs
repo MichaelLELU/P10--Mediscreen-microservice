@@ -7,7 +7,8 @@ namespace Mediscreen.Frontend.Controllers;
 
 [Authorize]
 public class PatientsController(
-    IPatientService patientService) : Controller
+    IPatientService patientService,
+    INoteService noteService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -141,12 +142,25 @@ public class PatientsController(
                 return NotFound();
             }
 
-            return View(patient);
+            IReadOnlyList<PatientNoteViewModel> notes =
+                await noteService.GetByPatientIdAsync(id);
+
+            PatientDetailsViewModel viewModel = new()
+            {
+                Patient = patient,
+                Notes = notes,
+                NewNote = new CreatePatientNoteViewModel
+                {
+                    PatientId = id
+                }
+            };
+
+            return View(viewModel);
         }
         catch (HttpRequestException)
         {
             TempData["ErrorMessage"] =
-                "Impossible de récupérer le détail du patient.";
+                "Impossible de récupérer le patient ou ses notes.";
 
             return RedirectToAction(nameof(Index));
         }

@@ -1,4 +1,4 @@
-﻿@model Mediscreen.Frontend.Models.PatientViewModel
+﻿@model Mediscreen.Frontend.Models.PatientDetailsViewModel
 
 @{
     ViewData["Title"] = "Détail du patient";
@@ -14,35 +14,56 @@
     </a>
 </div>
 
-<div class="card shadow-sm">
+@if (TempData["SuccessMessage"] is not null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] is not null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
     <div class="card-body">
         <h2 class="h4 mb-4">
-            @Model.FirstName @Model.LastName
+            @Model.Patient.FirstName
+            @Model.Patient.LastName
         </h2>
 
         <dl class="row mb-0">
             <dt class="col-sm-4">Nom</dt>
-            <dd class="col-sm-8">@Model.LastName</dd>
+            <dd class="col-sm-8">
+                @Model.Patient.LastName
+            </dd>
 
             <dt class="col-sm-4">Prénom</dt>
-            <dd class="col-sm-8">@Model.FirstName</dd>
+            <dd class="col-sm-8">
+                @Model.Patient.FirstName
+            </dd>
 
             <dt class="col-sm-4">Date de naissance</dt>
             <dd class="col-sm-8">
-                @Model.DateOfBirth.ToString("dd/MM/yyyy")
+                @Model.Patient.DateOfBirth.ToString("dd/MM/yyyy")
             </dd>
 
             <dt class="col-sm-4">Genre</dt>
-            <dd class="col-sm-8">@Model.Gender</dd>
+            <dd class="col-sm-8">
+                @Model.Patient.Gender
+            </dd>
 
             <dt class="col-sm-4">Adresse</dt>
             <dd class="col-sm-8">
-                @(Model.Address ?? "Non renseignée")
+                @(Model.Patient.Address ?? "Non renseignée")
             </dd>
 
             <dt class="col-sm-4">Téléphone</dt>
             <dd class="col-sm-8">
-                @(Model.PhoneNumber ?? "Non renseigné")
+                @(Model.Patient.PhoneNumber ?? "Non renseigné")
             </dd>
         </dl>
     </div>
@@ -50,9 +71,132 @@
     <div class="card-footer">
         <a asp-controller="Patients"
            asp-action="Edit"
-           asp-route-id="@Model.Id"
+           asp-route-id="@Model.Patient.Id"
            class="btn btn-primary">
             Modifier le patient
         </a>
     </div>
 </div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h4 mb-3">
+            Ajouter une note
+        </h2>
+
+        <form asp-controller="Notes"
+              asp-action="Create"
+              method="post">
+
+            <input asp-for="NewNote.PatientId"
+                   type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="NewNote.Content"
+                       class="form-label">
+                    Observation médicale
+                </label>
+
+                <textarea asp-for="NewNote.Content"
+                          class="form-control"
+                          rows="6"></textarea>
+
+                <span asp-validation-for="NewNote.Content"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Ajouter la note
+            </button>
+        </form>
+    </div>
+</div>
+
+<h2 class="h4 mb-3">
+    Historique des notes
+</h2>
+
+@if (Model.Notes.Count == 0)
+{
+    <div class="alert alert-info">
+        Aucune note n'a encore été enregistrée pour ce patient.
+    </div>
+}
+else
+{
+    @foreach (PatientNoteViewModel note in
+            Model.Notes.OrderByDescending(note => note.CreatedAt))
+    {
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                Ajoutée le
+                @note.CreatedAt
+                .ToLocalTime()
+                .ToString("dd/MM/yyyy à HH:mm")
+
+                @if (note.UpdatedAt.HasValue)
+                {
+                    <span class="text-muted">
+                        — modifiée le
+                        @note.UpdatedAt.Value
+                        .ToLocalTime()
+                        .ToString("dd/MM/yyyy à HH:mm")
+                    </span>
+                }
+            </div>
+
+            <div class="card-body">
+                <form asp-controller="Notes"
+                      asp-action="Update"
+                      method="post">
+
+                    <input name="Id"
+                           value="@note.Id"
+                           type="hidden" />
+
+                    <input name="PatientId"
+                           value="@note.PatientId"
+                           type="hidden" />
+
+                    <div class="mb-3">
+                        <textarea name="Content"
+                          class="form-control"
+                          rows="6">@note.Content</textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-outline-primary">
+                        Enregistrer les modifications
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-footer">
+                <form asp-controller="Notes"
+                      asp-action="Delete"
+                      method="post"
+                      onsubmit="return confirm('Voulez-vous vraiment supprimer cette note ?');">
+
+                    <input name="id"
+                           value="@note.Id"
+                           type="hidden" />
+
+                    <input name="patientId"
+                           value="@note.PatientId"
+                           type="hidden" />
+
+                    <button type="submit"
+                            class="btn btn-outline-danger">
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

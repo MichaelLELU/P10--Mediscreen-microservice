@@ -33,6 +33,10 @@ public static class FrontendConfiguration
             PatientService>();
 
         services.AddScoped<
+            INoteService,
+            NoteService>();
+
+        services.AddScoped<
             FrontendAuthenticationService,
             AuthenticationService>();
 
