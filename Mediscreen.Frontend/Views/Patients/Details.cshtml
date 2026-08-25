@@ -132,16 +132,12 @@ else
             <div class="card-header">
                 Ajoutée le
                 @note.CreatedAt
-                .ToLocalTime()
-                .ToString("dd/MM/yyyy à HH:mm")
 
                 @if (note.UpdatedAt.HasValue)
                 {
                     <span class="text-muted">
                         — modifiée le
                         @note.UpdatedAt.Value
-                        .ToLocalTime()
-                        .ToString("dd/MM/yyyy à HH:mm")
                     </span>
                 }
             </div>

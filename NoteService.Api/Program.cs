@@ -67,3 +67,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+namespace NoteService.Api
+{
+    public sealed class NoteApiAssemblyMarker
+    {
+    }
+}
