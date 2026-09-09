@@ -13,4 +13,5 @@
   <Project Path="Mediscreen.Tests/Mediscreen.Tests.csproj" Id="bff26e83-62d1-4c7c-a888-8b9b191dd7bd" />
   <Project Path="NoteService.Api/NoteService.Api.csproj" Id="8de60f8b-9a91-4ae9-8ace-3c54476cc3fc" />
   <Project Path="PatientService.Api/PatientService.Api.csproj" />
+  <Project Path="RiskService.Api/RiskService.Api.csproj" Id="6e910629-de93-4e7e-a1cc-a12431e444e8" />
 </Solution>

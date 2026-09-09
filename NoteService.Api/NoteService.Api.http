@@ -1,6 +1,8 @@
 @NoteService.Api_HostAddress = http://localhost:5026
+@Token = COLLER_LE_JWT_ICI
 
-GET {{NoteService.Api_HostAddress}}/weatherforecast/
+GET {{NoteService.Api_HostAddress}}/api/Notes/patient/1
 Accept: application/json
+Authorization: Bearer {{Token}}
 
 ###
