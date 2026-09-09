@@ -62,6 +62,9 @@ builder.Services.AddScoped<
     IRiskAssessmentService,
     RiskAssessmentService>();
 
+builder.Services.AddJwtAuthentication(
+    builder.Configuration);
+
 // Cette instruction doit être placée après tous les Add...
 var app = builder.Build();
 
@@ -72,6 +75,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
