@@ -7,4 +7,6 @@ public class PatientDetailsViewModel
     public IReadOnlyList<PatientNoteViewModel> Notes { get; set; } = [];
 
     public CreatePatientNoteViewModel NewNote { get; set; } = new();
+
+    public RiskAssessmentViewModel? RiskAssessment { get; set; }
 }

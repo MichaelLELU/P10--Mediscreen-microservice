@@ -37,6 +37,10 @@ public static class FrontendConfiguration
             NoteService>();
 
         services.AddScoped<
+            IRiskService,
+            RiskService>();
+
+        services.AddScoped<
             FrontendAuthenticationService,
             AuthenticationService>();
 

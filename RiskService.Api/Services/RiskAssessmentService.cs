@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using RiskService.Api.Clients.Interfaces;
+﻿using RiskService.Api.Clients.Interfaces;
 using RiskService.Api.Models;
 using RiskService.Api.Services.Interfaces;
 
@@ -10,20 +9,79 @@ public class RiskAssessmentService(
     INoteApiClient noteApiClient)
     : IRiskAssessmentService
 {
-    private static readonly string[] TriggerTerms =
-    [
-        "Hemoglobin A1C",
-        "Microalbumin",
-        "Height",
-        "Weight",
-        "Smoker",
-        "Abnormal",
-        "Cholesterol",
-        "Dizziness",
-        "Relapse",
-        "Reaction",
-        "Antibodies"
-    ];
+    private static readonly IReadOnlyDictionary<
+        string,
+        string[]> TriggerTerms =
+        new Dictionary<string, string[]>
+        {
+            ["HemoglobinA1C"] =
+            [
+                "Hemoglobin A1C",
+                "Hémoglobine A1C"
+            ],
+
+            ["Microalbumin"] =
+            [
+                "Microalbumin",
+                "Microalbumine"
+            ],
+
+            ["Height"] =
+            [
+                "Height",
+                "Taille"
+            ],
+
+            ["Weight"] =
+            [
+                "Weight",
+                "Poids"
+            ],
+
+            ["Smoker"] =
+            [
+                "Smoker",
+                "Fumeur",
+                "Fume",
+                "Fumer"
+            ],
+
+            ["Abnormal"] =
+            [
+                "Abnormal",
+                "Anormal"
+            ],
+
+            ["Cholesterol"] =
+            [
+                "Cholesterol",
+                "Cholestérol"
+            ],
+
+            ["Dizziness"] =
+            [
+                "Dizziness",
+                "Vertige"
+            ],
+
+            ["Relapse"] =
+            [
+                "Relapse",
+                "Rechute"
+            ],
+
+            ["Reaction"] =
+            [
+                "Reaction",
+                "Réaction"
+            ],
+
+            ["Antibodies"] =
+            [
+                "Antibodies",
+                "Anticorps"
+            ]
+        };
 
     public async Task<RiskAssessment?> AssessAsync(
         int patientId,
@@ -56,6 +114,7 @@ public class RiskAssessmentService(
         return new RiskAssessment
         {
             PatientId = patient.Id,
+
             PatientName =
                 $"{patient.FirstName} {patient.LastName}",
 
@@ -68,21 +127,28 @@ public class RiskAssessmentService(
     private static int CountTriggers(
         IEnumerable<PatientNoteDto> notes)
     {
-        int count = 0;
+        string completeMedicalRecord =
+            string.Join(
+                " ",
+                notes.Select(note => note.Content));
 
-        foreach (PatientNoteDto note in notes)
+        int triggerCount = 0;
+
+        foreach (string[] aliases in TriggerTerms.Values)
         {
-            foreach (string triggerTerm in TriggerTerms)
+            bool triggerFound =
+                aliases.Any(alias =>
+                    completeMedicalRecord.Contains(
+                        alias,
+                        StringComparison.OrdinalIgnoreCase));
+
+            if (triggerFound)
             {
-                count += Regex.Matches(
-                    note.Content,
-                    Regex.Escape(triggerTerm),
-                    RegexOptions.IgnoreCase |
-                    RegexOptions.CultureInvariant).Count;
+                triggerCount++;
             }
         }
 
-        return count;
+        return triggerCount;
     }
 
     private static RiskLevel DetermineRiskLevel(
@@ -95,13 +161,15 @@ public class RiskAssessmentService(
             return RiskLevel.None;
         }
 
-        bool isMale = gender.Equals(
-            "M",
-            StringComparison.OrdinalIgnoreCase);
+        bool isMale =
+            gender.Equals(
+                "M",
+                StringComparison.OrdinalIgnoreCase);
 
-        bool isFemale = gender.Equals(
-            "F",
-            StringComparison.OrdinalIgnoreCase);
+        bool isFemale =
+            gender.Equals(
+                "F",
+                StringComparison.OrdinalIgnoreCase);
 
         if (age < 30)
         {
@@ -147,12 +215,14 @@ public class RiskAssessmentService(
         return RiskLevel.None;
     }
 
-    private static int CalculateAge(DateOnly dateOfBirth)
+    private static int CalculateAge(
+        DateOnly dateOfBirth)
     {
         DateOnly today =
             DateOnly.FromDateTime(DateTime.Today);
 
-        int age = today.Year - dateOfBirth.Year;
+        int age =
+            today.Year - dateOfBirth.Year;
 
         if (dateOfBirth > today.AddYears(-age))
         {
