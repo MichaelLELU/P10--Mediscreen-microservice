@@ -22,6 +22,7 @@
     <ProjectReference Include="..\PatientService.Api\PatientService.Api.csproj" />
     <ProjectReference Include="..\AuthenticationService.Api\AuthenticationService.Api.csproj" />
 	<ProjectReference Include="..\NoteService.Api\NoteService.Api.csproj" />
+	<ProjectReference Include="..\RiskService.Api\RiskService.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
