@@ -144,6 +144,15 @@
                 </dt>
                 <dd class="col-sm-8">
                     @Model.RiskAssessment.TriggerCount
+
+                    @if (Model.RiskAssessment.Triggers.Count > 0)
+                    {
+                        <span class="text-muted">
+                            (@string.Join(
+                                            ", ",
+                                            Model.RiskAssessment.Triggers))
+                        </span>
+                    }
                 </dd>
             </dl>
         }

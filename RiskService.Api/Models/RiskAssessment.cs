@@ -10,5 +10,7 @@ public class RiskAssessment
 
     public int TriggerCount { get; set; }
 
+    public IReadOnlyList<string> Triggers { get; set; } = Array.Empty<string>();
+
     public RiskLevel RiskLevel { get; set; }
 }

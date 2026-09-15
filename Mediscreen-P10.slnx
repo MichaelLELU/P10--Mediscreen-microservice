@@ -4,6 +4,9 @@
     <File Path="dotnet-ci.yml" />
   </Folder>
   <Folder Name="/Éléments de solution/">
+    <File Path=".dockerignore" />
+    <File Path=".env" />
+    <File Path=".env.example" />
     <File Path=".gitignore" />
     <File Path="compose.yml" />
   </Folder>

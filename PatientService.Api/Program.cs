@@ -27,6 +27,29 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 WebApplication app = builder.Build();
 
+await using (AsyncServiceScope scope =
+    app.Services.CreateAsyncScope())
+{
+    PatientDbContext context =
+        scope.ServiceProvider
+            .GetRequiredService<PatientDbContext>();
+
+    if (context.Database.IsRelational())
+    {
+        await context.Database.MigrateAsync();
+    }
+    else
+    {
+        await context.Database.EnsureCreatedAsync();
+    }
+}
+
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await PatientDataSeeder.SeedAsync(
+        app.Services);
+}
+
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())

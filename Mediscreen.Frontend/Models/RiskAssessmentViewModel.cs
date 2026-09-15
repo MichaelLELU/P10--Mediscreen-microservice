@@ -10,5 +10,7 @@ public class RiskAssessmentViewModel
 
     public int TriggerCount { get; set; }
 
+    public IReadOnlyList<string> Triggers { get; set; } = [];
+
     public string RiskLevel { get; set; } = string.Empty;
 }

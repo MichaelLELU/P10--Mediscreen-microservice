@@ -14,31 +14,31 @@ public class RiskAssessmentService(
         string[]> TriggerTerms =
         new Dictionary<string, string[]>
         {
-            ["HemoglobinA1C"] =
+            ["Hémoglobine A1C"] =
             [
                 "Hemoglobin A1C",
                 "Hémoglobine A1C"
             ],
 
-            ["Microalbumin"] =
+            ["Microalbumine"] =
             [
                 "Microalbumin",
                 "Microalbumine"
             ],
 
-            ["Height"] =
+            ["Taille"] =
             [
                 "Height",
                 "Taille"
             ],
 
-            ["Weight"] =
+            ["Poids"] =
             [
                 "Weight",
                 "Poids"
             ],
 
-            ["Smoker"] =
+            ["Fumeur"] =
             [
                 "Smoker",
                 "Fumeur",
@@ -46,37 +46,37 @@ public class RiskAssessmentService(
                 "Fumer"
             ],
 
-            ["Abnormal"] =
+            ["Anormal"] =
             [
                 "Abnormal",
                 "Anormal"
             ],
 
-            ["Cholesterol"] =
+            ["Cholestérol"] =
             [
                 "Cholesterol",
                 "Cholestérol"
             ],
 
-            ["Dizziness"] =
+            ["Vertige"] =
             [
                 "Dizziness",
                 "Vertige"
             ],
 
-            ["Relapse"] =
+            ["Rechute"] =
             [
                 "Relapse",
                 "Rechute"
             ],
 
-            ["Reaction"] =
+            ["Réaction"] =
             [
                 "Reaction",
                 "Réaction"
             ],
 
-            ["Antibodies"] =
+            ["Anticorps"] =
             [
                 "Antibodies",
                 "Anticorps"
@@ -102,14 +102,20 @@ public class RiskAssessmentService(
                 patientId,
                 cancellationToken);
 
-        int age = CalculateAge(patient.DateOfBirth);
+        int age =
+            CalculateAge(patient.DateOfBirth);
 
-        int triggerCount = CountTriggers(notes);
+        IReadOnlyList<string> triggers =
+            FindTriggers(notes);
 
-        RiskLevel riskLevel = DetermineRiskLevel(
-            age,
-            patient.Gender,
-            triggerCount);
+        int triggerCount =
+            triggers.Count;
+
+        RiskLevel riskLevel =
+            DetermineRiskLevel(
+                age,
+                patient.Gender,
+                triggerCount);
 
         return new RiskAssessment
         {
@@ -120,11 +126,12 @@ public class RiskAssessmentService(
 
             Age = age,
             TriggerCount = triggerCount,
+            Triggers = triggers,
             RiskLevel = riskLevel
         };
     }
 
-    private static int CountTriggers(
+    private static IReadOnlyList<string> FindTriggers(
         IEnumerable<PatientNoteDto> notes)
     {
         string completeMedicalRecord =
@@ -132,23 +139,24 @@ public class RiskAssessmentService(
                 " ",
                 notes.Select(note => note.Content));
 
-        int triggerCount = 0;
+        List<string> foundTriggers = [];
 
-        foreach (string[] aliases in TriggerTerms.Values)
+        foreach (KeyValuePair<string, string[]> trigger
+                 in TriggerTerms)
         {
             bool triggerFound =
-                aliases.Any(alias =>
+                trigger.Value.Any(alias =>
                     completeMedicalRecord.Contains(
                         alias,
                         StringComparison.OrdinalIgnoreCase));
 
             if (triggerFound)
             {
-                triggerCount++;
+                foundTriggers.Add(trigger.Key);
             }
         }
 
-        return triggerCount;
+        return foundTriggers;
     }
 
     private static RiskLevel DetermineRiskLevel(

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using AuthenticationService.Api.Config;
 using AuthenticationService.Api.Data;
 using AuthenticationService.Api.Services;
@@ -14,6 +15,23 @@ builder.Services.AddIdentityConfiguration(
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 WebApplication app = builder.Build();
+
+await using (AsyncServiceScope scope =
+    app.Services.CreateAsyncScope())
+{
+    AuthenticationDbContext context =
+        scope.ServiceProvider
+            .GetRequiredService<AuthenticationDbContext>();
+
+    if (context.Database.IsRelational())
+    {
+        await context.Database.MigrateAsync();
+    }
+    else
+    {
+        await context.Database.EnsureCreatedAsync();
+    }
+}
 
 await IdentityDataSeeder.SeedDemoUserAsync(
     app.Services,
