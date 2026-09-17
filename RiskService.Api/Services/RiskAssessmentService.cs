@@ -1,4 +1,6 @@
-﻿using RiskService.Api.Clients.Interfaces;
+﻿using System.Globalization;
+using System.Text;
+using RiskService.Api.Clients.Interfaces;
 using RiskService.Api.Models;
 using RiskService.Api.Services.Interfaces;
 
@@ -139,6 +141,9 @@ public class RiskAssessmentService(
                 " ",
                 notes.Select(note => note.Content));
 
+        string normalizedMedicalRecord =
+            NormalizeText(completeMedicalRecord);
+
         List<string> foundTriggers = [];
 
         foreach (KeyValuePair<string, string[]> trigger
@@ -146,9 +151,9 @@ public class RiskAssessmentService(
         {
             bool triggerFound =
                 trigger.Value.Any(alias =>
-                    completeMedicalRecord.Contains(
-                        alias,
-                        StringComparison.OrdinalIgnoreCase));
+                    normalizedMedicalRecord.Contains(
+                        NormalizeText(alias),
+                        StringComparison.Ordinal));
 
             if (triggerFound)
             {
@@ -238,5 +243,30 @@ public class RiskAssessmentService(
         }
 
         return age;
+    }
+
+    private static string NormalizeText(string value)
+    {
+        string decomposedValue =
+            value.Normalize(
+                NormalizationForm.FormD);
+
+        StringBuilder builder = new();
+
+        foreach (char character in decomposedValue)
+        {
+            UnicodeCategory category =
+                CharUnicodeInfo.GetUnicodeCategory(character);
+
+            if (category != UnicodeCategory.NonSpacingMark)
+            {
+                builder.Append(character);
+            }
+        }
+
+        return builder
+            .ToString()
+            .Normalize(NormalizationForm.FormC)
+            .ToUpperInvariant();
     }
 }

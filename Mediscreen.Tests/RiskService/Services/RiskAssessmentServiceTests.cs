@@ -349,4 +349,41 @@ public class RiskAssessmentServiceTests
             RiskLevel.InDanger,
             result.RiskLevel);
     }
+
+    [Fact]
+    public async Task AssessAsync_ShouldIgnoreAccents()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "F");
+
+        ConfigureNotes(
+            "Hemoglobine A1C élevée.",
+            "Le cholesterol est élevé.",
+            "Reaction aux médicaments.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+
+        Assert.Equal(
+            3,
+            result.TriggerCount);
+
+        Assert.Contains(
+            "Hémoglobine A1C",
+            result.Triggers);
+
+        Assert.Contains(
+            "Cholestérol",
+            result.Triggers);
+
+        Assert.Contains(
+            "Réaction",
+            result.Triggers);
+    }
 }
