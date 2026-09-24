@@ -6,7 +6,7 @@
   <Folder Name="/Éléments de solution/">
     <File Path=".dockerignore" />
     <File Path=".env" />
-    <File Path=".env.example" />
+    <File Path=".env.sample" />
     <File Path=".gitignore" />
     <File Path="compose.yml" />
     <File Path="README.md" />
