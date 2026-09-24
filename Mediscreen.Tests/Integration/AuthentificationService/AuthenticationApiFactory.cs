@@ -19,8 +19,55 @@ public class AuthenticationApiFactory :
     public const string DemoPassword =
         "Integration123!";
 
+    private const string TestConnectionString =
+        "Server=localhost;" +
+        "Database=AuthenticationIntegrationTests;" +
+        "User Id=sa;" +
+        "Password=Integration123!;" +
+        "TrustServerCertificate=True";
+
+    private const string TestJwtKey =
+        "CleJWTIntegrationMediscreenSuffisammentLongue123456789";
+
+    private const string TestJwtIssuer =
+        "Mediscreen.IntegrationTests";
+
+    private const string TestJwtAudience =
+        "Mediscreen.IntegrationTests.Client";
+
     private readonly string _databaseName =
         $"AuthenticationIntegrationTests-{Guid.NewGuid()}";
+
+    public AuthenticationApiFactory()
+    {
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__AuthenticationDatabase",
+            TestConnectionString);
+
+        Environment.SetEnvironmentVariable(
+            "DemoUser__Email",
+            DemoEmail);
+
+        Environment.SetEnvironmentVariable(
+            "DemoUser__Password",
+            DemoPassword);
+
+        Environment.SetEnvironmentVariable(
+            "Jwt__Key",
+            TestJwtKey);
+
+        Environment.SetEnvironmentVariable(
+            "Jwt__Issuer",
+            TestJwtIssuer);
+
+        Environment.SetEnvironmentVariable(
+            "Jwt__Audience",
+            TestJwtAudience);
+
+        Environment.SetEnvironmentVariable(
+            "Jwt__ExpirationMinutes",
+            "60");
+    }
 
     protected override void ConfigureWebHost(
         IWebHostBuilder builder)
@@ -32,22 +79,30 @@ public class AuthenticationApiFactory :
             {
                 Dictionary<string, string?> settings = new()
                 {
-                    ["DemoUser:Email"] = DemoEmail,
-                    ["DemoUser:Password"] = DemoPassword,
+                    ["ConnectionStrings:AuthenticationDatabase"] =
+                        TestConnectionString,
+
+                    ["DemoUser:Email"] =
+                        DemoEmail,
+
+                    ["DemoUser:Password"] =
+                        DemoPassword,
 
                     ["Jwt:Key"] =
-                        "CleJWTIntegrationMediscreenSuffisammentLongue123456789",
+                        TestJwtKey,
 
                     ["Jwt:Issuer"] =
-                        "Mediscreen.IntegrationTests",
+                        TestJwtIssuer,
 
                     ["Jwt:Audience"] =
-                        "Mediscreen.IntegrationTests.Client",
+                        TestJwtAudience,
 
-                    ["Jwt:ExpirationMinutes"] = "60"
+                    ["Jwt:ExpirationMinutes"] =
+                        "60"
                 };
 
-                configuration.AddInMemoryCollection(settings);
+                configuration.AddInMemoryCollection(
+                    settings);
             });
 
         builder.ConfigureServices(services =>
@@ -64,8 +119,45 @@ public class AuthenticationApiFactory :
             services.AddDbContext<AuthenticationDbContext>(
                 options =>
                 {
-                    options.UseInMemoryDatabase(_databaseName);
+                    options.UseInMemoryDatabase(
+                        _databaseName);
                 });
         });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Environment.SetEnvironmentVariable(
+                "ConnectionStrings__AuthenticationDatabase",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "DemoUser__Email",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "DemoUser__Password",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Key",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Issuer",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Audience",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__ExpirationMinutes",
+                null);
+        }
+
+        base.Dispose(disposing);
     }
 }

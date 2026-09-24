@@ -31,8 +31,7 @@ public class NoteApiFactory :
         $"NoteIntegrationTests-{Guid.NewGuid()}";
 
     private readonly MongoDbContainer _mongoContainer =
-        new MongoDbBuilder()
-            .WithImage("mongo:8.0")
+        new MongoDbBuilder("mongo:8.0")
             .Build();
 
     public NoteApiFactory()

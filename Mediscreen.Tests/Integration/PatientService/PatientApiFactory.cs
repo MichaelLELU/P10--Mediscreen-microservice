@@ -24,11 +24,22 @@ public class PatientApiFactory :
     private const string TestJwtAudience =
         "Mediscreen.Services";
 
+    private const string TestConnectionString =
+        "Server=localhost;" +
+        "Database=PatientIntegrationTests;" +
+        "User Id=sa;" +
+        "Password=Integration123!;" +
+        "TrustServerCertificate=True";
+
     private readonly string _databaseName =
         $"PatientIntegrationTests-{Guid.NewGuid()}";
 
     public PatientApiFactory()
     {
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__PatientDatabase",
+            TestConnectionString);
+
         Environment.SetEnvironmentVariable(
             "Jwt__Key",
             TestJwtKey);
@@ -52,12 +63,21 @@ public class PatientApiFactory :
             {
                 Dictionary<string, string?> settings = new()
                 {
-                    ["Jwt:Key"] = TestJwtKey,
-                    ["Jwt:Issuer"] = TestJwtIssuer,
-                    ["Jwt:Audience"] = TestJwtAudience
+                    ["ConnectionStrings:PatientDatabase"] =
+                        TestConnectionString,
+
+                    ["Jwt:Key"] =
+                        TestJwtKey,
+
+                    ["Jwt:Issuer"] =
+                        TestJwtIssuer,
+
+                    ["Jwt:Audience"] =
+                        TestJwtAudience
                 };
 
-                configuration.AddInMemoryCollection(settings);
+                configuration.AddInMemoryCollection(
+                    settings);
             });
 
         builder.ConfigureServices(services =>
@@ -109,5 +129,29 @@ public class PatientApiFactory :
 
         await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Environment.SetEnvironmentVariable(
+                "ConnectionStrings__PatientDatabase",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Key",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Issuer",
+                null);
+
+            Environment.SetEnvironmentVariable(
+                "Jwt__Audience",
+                null);
+        }
+
+        base.Dispose(disposing);
     }
 }
