@@ -47,6 +47,11 @@ flowchart TD
     N --> M[(MongoDB)]
 ```
 
+## Déroulement de l’évaluation du risque
+
+<img width="2942" height="2476" alt="mediscreen-diagram" src="https://github.com/user-attachments/assets/65ee9832-7003-47e3-9a1a-5620af5ae06a" />
+
+
 ## Technologies utilisées
 
 - .NET 10 et ASP.NET Core ;
