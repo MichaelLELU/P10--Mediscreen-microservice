@@ -47,9 +47,9 @@ flowchart TD
     N --> M[(MongoDB)]
 ```
 
-## Déroulement de l’évaluation du risque
+## Fonctionnement général de l’application
 
-<img width="2942" height="2476" alt="mediscreen-diagram" src="https://github.com/user-attachments/assets/65ee9832-7003-47e3-9a1a-5620af5ae06a" />
+<img width="3304" height="4636" alt="Mediscreen-diagram" src="https://github.com/user-attachments/assets/22e95679-5a63-4294-a7c3-ce5b08f69062" />
 
 
 ## Technologies utilisées
