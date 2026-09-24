@@ -9,6 +9,7 @@
     <File Path=".env.example" />
     <File Path=".gitignore" />
     <File Path="compose.yml" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="AuthenticationService.Api/AuthenticationService.Api.csproj" Id="c2dff2a1-cdb8-4845-9ae2-5975312bda22" />
   <Project Path="Mediscreen.Frontend/Mediscreen.Frontend.csproj" Id="496e9859-7b13-41f8-986b-507f669ef700" />
