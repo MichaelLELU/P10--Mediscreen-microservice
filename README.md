@@ -84,13 +84,13 @@ Docker Desktop doit être démarré avant de lancer l'application ou les tests d
 À la racine du dépôt, créer le fichier `.env` à partir du modèle fourni :
 
 ```powershell
-Copy-Item .env.example .env
+Copy-Item .env.sample .env
 ```
 
 Sous Linux ou macOS :
 
 ```bash
-cp .env.example .env
+cp .env.sample .env
 ```
 
 Compléter ensuite les variables du fichier `.env` :
