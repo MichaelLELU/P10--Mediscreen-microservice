@@ -9,6 +9,7 @@
     <File Path=".env.sample" />
     <File Path=".gitignore" />
     <File Path="compose.yml" />
+    <File Path="libman.json" />
     <File Path="README.md" />
   </Folder>
   <Project Path="AuthenticationService.Api/AuthenticationService.Api.csproj" Id="c2dff2a1-cdb8-4845-9ae2-5975312bda22" />

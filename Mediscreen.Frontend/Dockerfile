@@ -1,11 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 COPY ["Mediscreen.Frontend/Mediscreen.Frontend.csproj", "Mediscreen.Frontend/"]
 RUN dotnet restore "Mediscreen.Frontend/Mediscreen.Frontend.csproj"
 
 COPY . .
 WORKDIR "/src/Mediscreen.Frontend"
+
+RUN libman restore
 
 RUN dotnet publish \
     "Mediscreen.Frontend.csproj" \
