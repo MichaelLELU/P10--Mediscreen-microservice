@@ -17,9 +17,10 @@ public class RiskAssessmentServiceTests
 
     public RiskAssessmentServiceTests()
     {
-        _service = new RiskAssessmentService(
-            _patientClientMock.Object,
-            _noteClientMock.Object);
+        _service =
+            new RiskAssessmentService(
+                _patientClientMock.Object,
+                _noteClientMock.Object);
     }
 
     [Fact]
@@ -66,7 +67,9 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.TriggerCount);
-        Assert.Equal(RiskLevel.None, result.RiskLevel);
+        Assert.Equal(
+            RiskLevel.None,
+            result.RiskLevel);
     }
 
     [Fact]
@@ -88,6 +91,7 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.TriggerCount);
+
         Assert.Equal(
             RiskLevel.Borderline,
             result.RiskLevel);
@@ -112,6 +116,7 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(3, result.TriggerCount);
+
         Assert.Equal(
             RiskLevel.InDanger,
             result.RiskLevel);
@@ -138,6 +143,7 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(8, result.TriggerCount);
+
         Assert.Equal(
             RiskLevel.EarlyOnset,
             result.RiskLevel);
@@ -162,6 +168,7 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.TriggerCount);
+
         Assert.Equal(
             RiskLevel.Borderline,
             result.RiskLevel);
@@ -187,6 +194,7 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.TriggerCount);
+
         Assert.Equal(
             RiskLevel.None,
             result.RiskLevel);
@@ -209,6 +217,226 @@ public class RiskAssessmentServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(25, result.Age);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ForPatientOverThirtyWithSixTriggers_ShouldReturnInDanger()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "M");
+
+        ConfigureNotes(
+            "Poids, taille, fumeur, anormal, cholestérol et vertige.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(6, result.TriggerCount);
+
+        Assert.Equal(
+            RiskLevel.InDanger,
+            result.RiskLevel);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ForPatientOverThirtyWithEightTriggers_ShouldReturnEarlyOnset()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "F");
+
+        ConfigureNotes(
+            "Poids, taille, fumeur, anormal, cholestérol, vertige, réaction et anticorps.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(8, result.TriggerCount);
+
+        Assert.Equal(
+            RiskLevel.EarlyOnset,
+            result.RiskLevel);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ForMaleUnderThirtyWithFiveTriggers_ShouldReturnEarlyOnset()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 20,
+            gender: "M");
+
+        ConfigureNotes(
+            "Poids, taille, fumeur, anormal et cholestérol.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(5, result.TriggerCount);
+
+        Assert.Equal(
+            RiskLevel.EarlyOnset,
+            result.RiskLevel);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ForFemaleUnderThirtyWithFourTriggers_ShouldReturnInDanger()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 20,
+            gender: "F");
+
+        ConfigureNotes(
+            "Poids, taille, anormal et cholestérol.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(4, result.TriggerCount);
+
+        Assert.Equal(
+            RiskLevel.InDanger,
+            result.RiskLevel);
+    }
+
+    [Fact]
+    public async Task AssessAsync_ShouldIgnoreAccents()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "F");
+
+        ConfigureNotes(
+            "Hemoglobine A1C élevée.",
+            "Le cholesterol est élevé.",
+            "Reaction aux médicaments.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(3, result.TriggerCount);
+
+        Assert.Contains(
+            "Hémoglobine A1C",
+            result.Triggers);
+
+        Assert.Contains(
+            "Cholestérol",
+            result.Triggers);
+
+        Assert.Contains(
+            "Réaction",
+            result.Triggers);
+    }
+
+    [Theory]
+    [InlineData("Le patient est non fumeur.")]
+    [InlineData("Le patient est non-fumeur.")]
+    [InlineData("Le patient n'est pas fumeur.")]
+    [InlineData("Le patient ne fume pas.")]
+    [InlineData("Le patient ne fume jamais.")]
+    [InlineData("Le patient ne fume plus.")]
+    public async Task AssessAsync_WhenSmokingIsNegated_ShouldIgnoreTrigger(
+        string noteContent)
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "M");
+
+        ConfigureNotes(noteContent);
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(0, result.TriggerCount);
+        Assert.Empty(result.Triggers);
+
+        Assert.Equal(
+            RiskLevel.None,
+            result.RiskLevel);
+    }
+
+    [Theory]
+    [InlineData("Le patient ne présente aucun vertige.")]
+    [InlineData("Le patient ne présente aucun signe de vertige.")]
+    [InlineData("Le patient ne présente pas de réaction.")]
+    [InlineData("Le dossier indique une absence de cholestérol.")]
+    [InlineData("Le patient est sans microalbumine.")]
+    public async Task AssessAsync_WhenTriggerIsNegated_ShouldIgnoreIt(
+        string noteContent)
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "F");
+
+        ConfigureNotes(noteContent);
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(0, result.TriggerCount);
+        Assert.Empty(result.Triggers);
+
+        Assert.Equal(
+            RiskLevel.None,
+            result.RiskLevel);
+    }
+
+    [Fact]
+    public async Task AssessAsync_WithNegatedAndPositiveMention_ShouldCountPositiveTrigger()
+    {
+        // Arrange
+        ConfigurePatient(
+            age: 40,
+            gender: "M");
+
+        ConfigureNotes(
+            "Le patient est non fumeur.",
+            "Une autre observation indique que le patient est fumeur.");
+
+        // Act
+        RiskAssessment? result =
+            await _service.AssessAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TriggerCount);
+
+        Assert.Contains(
+            "Fumeur",
+            result.Triggers);
+
+        Assert.Equal(
+            RiskLevel.None,
+            result.RiskLevel);
     }
 
     private void ConfigurePatient(
@@ -256,134 +484,5 @@ public class RiskAssessmentServiceTests
                     1,
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(notes);
-    }
-
-    [Fact]
-    public async Task AssessAsync_ForPatientOverThirtyWithSixTriggers_ShouldReturnInDanger()
-    {
-        // Arrange
-        ConfigurePatient(
-            age: 40,
-            gender: "M");
-
-        ConfigureNotes(
-            "Poids, taille, fumeur, anormal, cholestérol et vertige.");
-
-        // Act
-        RiskAssessment? result =
-            await _service.AssessAsync(1);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(6, result.TriggerCount);
-        Assert.Equal(
-            RiskLevel.InDanger,
-            result.RiskLevel);
-    }
-
-    [Fact]
-    public async Task AssessAsync_ForPatientOverThirtyWithEightTriggers_ShouldReturnEarlyOnset()
-    {
-        // Arrange
-        ConfigurePatient(
-            age: 40,
-            gender: "F");
-
-        ConfigureNotes(
-            "Poids, taille, fumeur, anormal, cholestérol, vertige, réaction et anticorps.");
-
-        // Act
-        RiskAssessment? result =
-            await _service.AssessAsync(1);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(8, result.TriggerCount);
-        Assert.Equal(
-            RiskLevel.EarlyOnset,
-            result.RiskLevel);
-    }
-
-    [Fact]
-    public async Task AssessAsync_ForMaleUnderThirtyWithFiveTriggers_ShouldReturnEarlyOnset()
-    {
-        // Arrange
-        ConfigurePatient(
-            age: 20,
-            gender: "M");
-
-        ConfigureNotes(
-            "Poids, taille, fumeur, anormal et cholestérol.");
-
-        // Act
-        RiskAssessment? result =
-            await _service.AssessAsync(1);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(5, result.TriggerCount);
-        Assert.Equal(
-            RiskLevel.EarlyOnset,
-            result.RiskLevel);
-    }
-
-    [Fact]
-    public async Task AssessAsync_ForFemaleUnderThirtyWithFourTriggers_ShouldReturnInDanger()
-    {
-        // Arrange
-        ConfigurePatient(
-            age: 20,
-            gender: "F");
-
-        ConfigureNotes(
-            "Poids, taille, anormal et cholestérol.");
-
-        // Act
-        RiskAssessment? result =
-            await _service.AssessAsync(1);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(4, result.TriggerCount);
-        Assert.Equal(
-            RiskLevel.InDanger,
-            result.RiskLevel);
-    }
-
-    [Fact]
-    public async Task AssessAsync_ShouldIgnoreAccents()
-    {
-        // Arrange
-        ConfigurePatient(
-            age: 40,
-            gender: "F");
-
-        ConfigureNotes(
-            "Hemoglobine A1C élevée.",
-            "Le cholesterol est élevé.",
-            "Reaction aux médicaments.");
-
-        // Act
-        RiskAssessment? result =
-            await _service.AssessAsync(1);
-
-        // Assert
-        Assert.NotNull(result);
-
-        Assert.Equal(
-            3,
-            result.TriggerCount);
-
-        Assert.Contains(
-            "Hémoglobine A1C",
-            result.Triggers);
-
-        Assert.Contains(
-            "Cholestérol",
-            result.Triggers);
-
-        Assert.Contains(
-            "Réaction",
-            result.Triggers);
     }
 }
