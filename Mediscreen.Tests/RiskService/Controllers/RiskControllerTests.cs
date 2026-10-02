@@ -17,7 +17,8 @@ public class RiskControllerTests
     public RiskControllerTests()
     {
         _controller =
-            new RiskController(_serviceMock.Object);
+            new RiskController(
+                _serviceMock.Object);
     }
 
     [Fact]
@@ -30,6 +31,14 @@ public class RiskControllerTests
             PatientName = "Test TestInDanger",
             Age = 22,
             TriggerCount = 3,
+
+            Triggers =
+            [
+                "Fumeur",
+                "Anormal",
+                "Cholestérol"
+            ],
+
             RiskLevel = RiskLevel.InDanger
         };
 
@@ -62,6 +71,14 @@ public class RiskControllerTests
         Assert.Equal(
             RiskLevel.InDanger,
             returnedAssessment.RiskLevel);
+
+        Assert.Equal(
+            3,
+            returnedAssessment.TriggerCount);
+
+        Assert.Contains(
+            "Fumeur",
+            returnedAssessment.Triggers);
     }
 
     [Fact]
