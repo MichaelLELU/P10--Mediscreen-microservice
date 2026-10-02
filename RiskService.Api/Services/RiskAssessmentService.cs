@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Text;
 using RiskService.Api.Clients.Interfaces;
 using RiskService.Api.Models;
@@ -151,9 +152,9 @@ public class RiskAssessmentService(
         {
             bool triggerFound =
                 trigger.Value.Any(alias =>
-                    normalizedMedicalRecord.Contains(
-                        NormalizeText(alias),
-                        StringComparison.Ordinal));
+                    ContainsPositiveTrigger(
+                        normalizedMedicalRecord,
+                        NormalizeText(alias)));
 
             if (triggerFound)
             {
@@ -162,6 +163,30 @@ public class RiskAssessmentService(
         }
 
         return foundTriggers;
+    }
+
+    private static bool ContainsPositiveTrigger(
+     string medicalRecord,
+     string alias)
+    {
+        string aliasPattern =
+            Regex.Escape(alias);
+
+        string negationBeforePattern =
+            $@"\b(?:NON|SANS|JAMAIS|AUCUN(?:E)?|PAS(?:\s+DE)?|ABSENCE\s+DE)(?:\s+SIGNE(?:S)?\s+DE)?[\s-]+{aliasPattern}\b";
+
+        string negationAfterPattern =
+            $@"\b{aliasPattern}\s+(?:PAS|JAMAIS|PLUS)\b";
+
+        string recordWithoutNegations =
+            Regex.Replace(
+                medicalRecord,
+                $"{negationBeforePattern}|{negationAfterPattern}",
+                string.Empty);
+
+        return Regex.IsMatch(
+            recordWithoutNegations,
+            $@"(?<![\p{{L}}\p{{N}}]){aliasPattern}(?![\p{{L}}\p{{N}}])");
     }
 
     private static RiskLevel DetermineRiskLevel(
